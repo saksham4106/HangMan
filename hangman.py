@@ -1,7 +1,8 @@
 from tkinter import *
 from PIL import Image, ImageTk
 import random
-yoyoyoyoyoyoyoyoyoyoyoyyoyoy
+
+ffffffffffffffffffff
 
 
 class HangMan:
