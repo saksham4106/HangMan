@@ -2,15 +2,15 @@ from tkinter import *
 from PIL import Image, ImageTk
 import random
 
-ffffffffffffffffffff
-
-
 class HangMan:
     def __init__(self, win):
         self.win = win
         self.word = ""
         self.wordLabel = Label()
         self.counter = 0
+        self.isAlive = True
+        self.drawingCanvas = Canvas()
+        self.isEligibleForCheats = False
 
         self.mainWindowStuff()
 
@@ -26,6 +26,14 @@ class HangMan:
         self.generateWord()
         self.keyboard()
         self.drawHangman()
+        if(self.isEligibleForCheats):
+            cheatButton = Button(self.win, text = "Hint", font = (None, 40), fg = "whitesmoke", bg = "gray8",
+                                command = self.giveHint)
+            cheatButton.place(x = 1200, y = 0)
+
+
+    def giveHint(self):
+        print("no hints for you smh")
 
     def keyboard(self):
         keyFrame = Frame(self.win, width=1350, height=300, bg='gray8', relief=RIDGE, bd=10)
@@ -43,6 +51,9 @@ class HangMan:
             if key_button["text"] == "W":
                 key_button.config(padx=5)
 
+            if(not self.isAlive):
+                key_button.config(state = DISABLED)
+
             if column == 18:
                 row += 1
                 column = 0
@@ -55,74 +66,99 @@ class HangMan:
         y1 = y + r
         return canvas.create_oval(x0, y0, x1, y1, width = 2)
 
-    def createFace(self, isAlive, drawingCanvas):
-        self.createCircle(215,75 + 20, 20, drawingCanvas) # Face
+    def createFace(self, isAlive):
+        self.createCircle(215,75 + 20, 20, self.drawingCanvas) # Face
         if(isAlive):
             #Alive Face
-            drawingCanvas.create_rectangle(205, 90, 205, 90, width = 4) # Left Eye
-            drawingCanvas.create_rectangle(223, 90, 223, 90, width = 4) # Right Eye
-            drawingCanvas.create_line(207, 105, 223, 105, width = 2) #Mouth
+            self.drawingCanvas.create_rectangle(205, 90, 205, 90, width = 4) # Left Eye
+            self.drawingCanvas.create_rectangle(223, 90, 223, 90, width = 4) # Right Eye
+            self.drawingCanvas.create_line(207, 105, 223, 105, width = 2) #Mouth
 
 
         elif(not isAlive):
             #Dead Face
-            drawingCanvas.create_line(203, 94, 210, 87, width = 2)# Eye
-            drawingCanvas.create_line(210, 94, 203, 87, width = 2)# EYE
+            self.drawingCanvas.create_line(203, 94, 210, 87, width = 2)# Eye
+            self.drawingCanvas.create_line(210, 94, 203, 87, width = 2)# EYE
 
-            drawingCanvas.create_line(220, 94, 227, 87, width = 2)# Eye
-            drawingCanvas.create_line(227, 94, 220, 87, width = 2)# EYE
+            self.drawingCanvas.create_line(220, 94, 227, 87, width = 2)# Eye
+            self.drawingCanvas.create_line(227, 94, 220, 87, width = 2)# EYE
 
-            drawingCanvas.create_line(205, 106, 230, 96, width = 2) # Mouth
+            self.drawingCanvas.create_line(205, 106, 230, 96, width = 2) # Mouth
 
     def drawHangman(self):
-        drawingCanvas = Canvas(self.win, bg = "grey8", bd = 10, relief = RIDGE)
+        self.drawingCanvas = Canvas(self.win, bg = "grey8", bd = 10, relief = RIDGE)
 
-        drawingCanvas.create_line(125, 50, 125, 250, width = 5) # Stalk
-        drawingCanvas.create_line(160, 50, 125, 80, width = 5) #Stalk Line Holder
-        drawingCanvas.create_line(125, 50, 275, 50, width = 5) # Top Line
-        drawingCanvas.create_line(125, 210, 150, 250, width = 5)# Base Holder Right
-        drawingCanvas.create_line(125, 210, 100, 250, width = 5)# Base Holder Left
-        drawingCanvas.create_line(75, 250, 175, 250, width = 5) # Base Line
-        drawingCanvas.create_line(215, 50, 215, 75, width = 2) # Noose
+        self.drawingCanvas.create_line(125, 50, 125, 250, width = 5) # Stalk
+        self.drawingCanvas.create_line(160, 50, 125, 80, width = 5) #Stalk Line Holder
+        self.drawingCanvas.create_line(125, 50, 275, 50, width = 5) # Top Line
+        self.drawingCanvas.create_line(125, 210, 150, 250, width = 5)# Base Holder Right
+        self.drawingCanvas.create_line(125, 210, 100, 250, width = 5)# Base Holder Left
+        self.drawingCanvas.create_line(75, 250, 175, 250, width = 5) # Base Line
+        self.drawingCanvas.create_line(215, 50, 215, 75, width = 2) # Noose
 
         if self.counter == 1:
-            self.createFace(True, drawingCanvas)
+            self.createFace(True)
         elif self.counter == 2:
-            self.createFace(True, drawingCanvas)
-            drawingCanvas.create_line(215, 115, 215, 180, width = 2) # Body
+            self.createFace(True)
+            self.drawingCanvas.create_line(215, 115, 215, 180, width = 2) # Body
         elif self.counter == 3:
-            self.createFace(True, drawingCanvas)
-            drawingCanvas.create_line(215, 115, 215, 180, width = 2) # Body
-            drawingCanvas.create_line(215, 135, 175, 150, width = 2) # Left Arm
+            self.createFace(True)
+            self.drawingCanvas.create_line(215, 115, 215, 180, width = 2) # Body
+            self.drawingCanvas.create_line(215, 135, 175, 150, width = 2) # Left Arm
         elif self.counter == 4:
-            self.createFace(True, drawingCanvas)
-            drawingCanvas.create_line(215, 115, 215, 180, width = 2) # Body
-            drawingCanvas.create_line(215, 135, 175, 150, width = 2) # Left Arm
-            drawingCanvas.create_line(215, 135, 255, 150, width = 2) # Right Arm
+            self.createFace(True)
+            self.drawingCanvas.create_line(215, 115, 215, 180, width = 2) # Body
+            self.drawingCanvas.create_line(215, 135, 175, 150, width = 2) # Left Arm
+            self.drawingCanvas.create_line(215, 135, 255, 150, width = 2) # Right Arm
         elif self.counter == 5:
-            self.createFace(True, drawingCanvas)
-            drawingCanvas.create_line(215, 115, 215, 180, width = 2) # Body
-            drawingCanvas.create_line(215, 135, 175, 150, width = 2) # Left Arm
-            drawingCanvas.create_line(215, 135, 255, 150, width = 2) # Right Arm
-            drawingCanvas.create_line(215, 180, 250, 215, width = 2) # Right Leg
+            self.createFace(True)
+            self.drawingCanvas.create_line(215, 115, 215, 180, width = 2) # Body
+            self.drawingCanvas.create_line(215, 135, 175, 150, width = 2) # Left Arm
+            self.drawingCanvas.create_line(215, 135, 255, 150, width = 2) # Right Arm
+            self.drawingCanvas.create_line(215, 180, 250, 215, width = 2) # Right Leg
         elif self.counter == 6:
-            self.createFace(True, drawingCanvas)
-            drawingCanvas.create_line(215, 115, 215, 180, width = 2) # Body
-            drawingCanvas.create_line(215, 135, 175, 150, width = 2) # Left Arm
-            drawingCanvas.create_line(215, 135, 255, 150, width = 2) # Right Arm
-            drawingCanvas.create_line(215, 180, 250, 215, width = 2) # Right Leg
-            drawingCanvas.create_line(215, 179, 185, 215, width = 2) # Left Leg
+            self.createFace(True)
+            self.drawingCanvas.create_line(215, 115, 215, 180, width = 2) # Body
+            self.drawingCanvas.create_line(215, 135, 175, 150, width = 2) # Left Arm
+            self.drawingCanvas.create_line(215, 135, 255, 150, width = 2) # Right Arm
+            self.drawingCanvas.create_line(215, 180, 250, 215, width = 2) # Right Leg
+            self.drawingCanvas.create_line(215, 179, 185, 215, width = 2) # Left Leg
         elif self.counter == 7:
-            self.createFace(False, drawingCanvas)
-            drawingCanvas.create_line(215, 115, 215, 180, width = 2) # Body
-            drawingCanvas.create_line(215, 135, 175, 150, width = 2) # Left Arm
-            drawingCanvas.create_line(215, 135, 255, 150, width = 2) # Right Arm
-            drawingCanvas.create_line(215, 180, 250, 215, width = 2) # Right Leg
-            drawingCanvas.create_line(215, 179, 185, 215, width = 2) # Left Leg
+            self.createFace(False)
+            self.drawingCanvas.create_line(215, 115, 215, 180, width = 2) # Body
+            self.drawingCanvas.create_line(215, 135, 175, 150, width = 2) # Left Arm
+            self.drawingCanvas.create_line(215, 135, 255, 150, width = 2) # Right Arm
+            self.drawingCanvas.create_line(215, 180, 250, 215, width = 2) # Right Leg
+            self.drawingCanvas.create_line(215, 179, 185, 215, width = 2) # Left Leg
+            self.isAlive = False
+            self.keyboard()
+
+            endMessage = Label(self.win, text = "You Lost!! \n The correct word \n was " + self.word, bg = "grey8", font = (None, 40), fg = "whitesmoke")
+            endMessage.place(x = 0, y= 100)
+
+            playAgain = Button(self.win, text = "Play Again? ", bg = "grey8", font = (None, 30), fg = "whitesmoke",
+                                command = lambda: self.regenerate(endMessage, playAgain))
+            playAgain.place(x = 125, y = 300)
 
 
 
-        drawingCanvas.place(x = 500, y = 200)
+
+        self.drawingCanvas.place(x = 500, y = 200)
+
+    def regenerate(self, label, button):
+        label.destroy()
+        button.destroy()
+        self.counter = 0
+
+
+        self.wordLabel.destroy()
+        self.wordLabel = Label()
+        self.isAlive = True
+        self.generateWord()
+        self.keyboard()
+        self.drawingCanvas.delete("all")
+        self.drawHangman()
+
 
     def keyPressed(self, button):
         button['state'] = DISABLED
@@ -151,7 +187,13 @@ class HangMan:
             self.drawHangman()
 
         if (not "_" in self.hidden_word):
-            print("hahahahahah")
+            endMessage = Label(self.win, text = "You Won!!", bg = "grey8", font = (None, 40), fg = "whitesmoke")
+            endMessage.place(x = 100, y= 100)
+
+            playAgain = Button(self.win, text = "Play Again? ", bg = "grey8", font = (None, 30), fg = "whitesmoke",
+                                command = lambda: self.regenerate(endMessage, playAgain))
+            playAgain.place(x = 125, y = 170)
+
         self.wordLabel["text"] = self.hidden_word
 
     def generateWord(self):
@@ -174,6 +216,8 @@ class HangMan:
         randomNum = random.randint(0, len(wordsList) - 1)
 
         self.word = wordsList[randomNum].upper()
+        if(len(self.word) >= 9):
+            self.isEligibleForCheats = True
         self.formattedWord = ""
         self.hidden_word = ""
 
@@ -189,7 +233,7 @@ class HangMan:
         wordFrame.place(x=550, y=100)
         self.wordLabel.pack()
 
-        print(self.formattedWord)
+        #print(self.formattedWord)
 
 
 if __name__ == "__main__":
